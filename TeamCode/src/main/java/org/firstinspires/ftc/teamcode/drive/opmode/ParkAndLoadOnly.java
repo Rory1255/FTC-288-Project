@@ -168,10 +168,7 @@ public class ParkAndLoadOnly extends LinearOpMode {
             drive.followTrajectory(parkingZoneOne);
 
         }
-        if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.TWO){
-            drive.followTrajectorySequence(initialForward);
 
-        }
         if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.THREE){
             drive.followTrajectory(parkingZoneThree);
 
