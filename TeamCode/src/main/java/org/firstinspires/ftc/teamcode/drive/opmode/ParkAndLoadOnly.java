@@ -120,9 +120,9 @@ public class ParkAndLoadOnly extends LinearOpMode {
                 .lineTo(new Vector2d(60, -35))
                 .build();
 
-        Trajectory parkingZoneTwo = drive.trajectoryBuilder(initialForward.end())
+       /* Trajectory parkingZoneTwo = drive.trajectoryBuilder(initialForward.end())
                 .lineTo(new Vector2d(35, -35))
-                .build();
+                .build();*/
 
         Trajectory parkingZoneThree = drive.trajectoryBuilder(initialForward.end())
                 .lineTo(new Vector2d(12, -35))
@@ -169,7 +169,7 @@ public class ParkAndLoadOnly extends LinearOpMode {
 
         }
         if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.TWO){
-            drive.followTrajectory(parkingZoneTwo);
+            drive.followTrajectorySequence(initialForward);
 
         }
         if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.THREE){
