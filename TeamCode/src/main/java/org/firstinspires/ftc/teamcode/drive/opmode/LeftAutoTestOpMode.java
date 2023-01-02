@@ -36,7 +36,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 
 import java.util.Arrays;
 
-@Disabled
+//@Disabled
 @Config
 @Autonomous(name = "LeftAuto", group = "drive")
 public class LeftAutoTestOpMode extends LinearOpMode {
