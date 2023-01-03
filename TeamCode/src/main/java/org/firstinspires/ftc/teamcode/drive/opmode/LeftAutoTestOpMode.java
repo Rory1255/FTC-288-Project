@@ -89,26 +89,53 @@ public class LeftAutoTestOpMode extends LinearOpMode {
 
 
 
-        TrajectorySequence bigTest = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence bigTest1 = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(-35, -54))
                 .waitSeconds(0.3)
+                .build();
+
+        TrajectorySequence bigTest2 = drive.trajectorySequenceBuilder(bigTest1.end())
                 .lineTo(new Vector2d(-35, -40))
                 .waitSeconds(0.1)
+                .build();
+
+        TrajectorySequence bigTest3 = drive.trajectorySequenceBuilder(bigTest2.end())
                 .splineToConstantHeading(new Vector2d(-23.5, -35), 0)
                 .lineTo(new Vector2d(-23.5, -33))
                 .waitSeconds(0.3)
+                .build();
+
+        TrajectorySequence bigTest4 = drive.trajectorySequenceBuilder(bigTest3.end())
                 .lineTo(new Vector2d(-23.5, -35))
+                .build();
+
+        TrajectorySequence bigTest5 = drive.trajectorySequenceBuilder(bigTest4.end())
                 .lineTo(new Vector2d(-35, -35))
+                .build();
+
+        TrajectorySequence bigTest6 = drive.trajectorySequenceBuilder(bigTest5.end())
                 .lineTo(new Vector2d(-35, -11.5))
                 .turn(Math.toRadians(90))
+                .build();
+
+        TrajectorySequence bigTest7 = drive.trajectorySequenceBuilder(bigTest6.end())
                 .lineTo(new Vector2d(-59, -11.5))
                 .waitSeconds(0.3)
+                .build();
+
+        TrajectorySequence bigTest8 = drive.trajectorySequenceBuilder(bigTest7.end())
                 .lineTo(new Vector2d(-35, -11.5))
                 .turn(Math.toRadians(135))
+                .build();
+
+        TrajectorySequence bigTest9 = drive.trajectorySequenceBuilder(bigTest8.end())
                 .lineTo(new Vector2d(-30, -17))
                 .waitSeconds(0.3)
                 .lineTo(new Vector2d(-35, -11.5))
                 .turn(Math.toRadians(-135))
+                .build();
+
+        TrajectorySequence bigTest10 = drive.trajectorySequenceBuilder(bigTest9.end())
                 .lineTo(new Vector2d(-59, -11.5))
                 .waitSeconds(0.3)
                 .lineTo(new Vector2d(-35, -11.5))
@@ -126,6 +153,7 @@ public class LeftAutoTestOpMode extends LinearOpMode {
                 .lineTo(new Vector2d(-35, -11.5))
                 .turn(Math.toRadians(135))
                 .lineTo(new Vector2d(-35, -35))
+                .waitSeconds(0.2)
                 .lineTo(new Vector2d(-12, -35))
                 .build();
 
@@ -262,6 +290,24 @@ public class LeftAutoTestOpMode extends LinearOpMode {
         targetElevatorPosition = max(0.0, targetElevatorPosition);
         targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
 
-        drive.followTrajectorySequence(bigTest);
+        drive.followTrajectorySequence(bigTest1);
+
+        drive.followTrajectorySequence(bigTest2);
+
+        drive.followTrajectorySequence(bigTest3);
+
+        drive.followTrajectorySequence(bigTest4);
+
+        drive.followTrajectorySequence(bigTest5);
+
+        drive.followTrajectorySequence(bigTest6);
+
+        drive.followTrajectorySequence(bigTest7);
+
+        drive.followTrajectorySequence(bigTest8);
+
+        drive.followTrajectorySequence(bigTest9);
+
+        drive.followTrajectorySequence(bigTest10);
     }
 }

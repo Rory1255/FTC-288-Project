@@ -20,7 +20,7 @@ public class MeepMeepTesting {
                                 .waitSeconds(0.3)
                                 .lineTo(new Vector2d(-35, -40))
                                 .waitSeconds(0.1)
-                                .splineToConstantHeading(new Vector2d(-23.5, -35), 0)
+                                .splineToConstantHeading(new Vector2d(-23.5, -35), Math.toRadians(0))
                                 .lineTo(new Vector2d(-23.5, -33))
                                 .waitSeconds(0.3)
                                 .lineTo(new Vector2d(-23.5, -35))
