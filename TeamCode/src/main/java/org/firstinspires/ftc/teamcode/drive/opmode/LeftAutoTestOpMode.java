@@ -89,7 +89,48 @@ public class LeftAutoTestOpMode extends LinearOpMode {
 
 
 
-        TrajectorySequence coneLineUp = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence bigTest = drive.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(-35, -54))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -40))
+                .waitSeconds(0.1)
+                .splineToConstantHeading(new Vector2d(-23.5, -35), 0)
+                .lineTo(new Vector2d(-23.5, -33))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-23.5, -35))
+                .lineTo(new Vector2d(-35, -35))
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(90))
+                .lineTo(new Vector2d(-59, -11.5))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(135))
+                .lineTo(new Vector2d(-30, -17))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(-135))
+                .lineTo(new Vector2d(-59, -11.5))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(135))
+                .lineTo(new Vector2d(-30, -17))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(-135))
+                .lineTo(new Vector2d(-59, -11.5))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(135))
+                .lineTo(new Vector2d(-30, -17))
+                .waitSeconds(0.3)
+                .lineTo(new Vector2d(-35, -11.5))
+                .turn(Math.toRadians(135))
+                .lineTo(new Vector2d(-35, -35))
+                .lineTo(new Vector2d(-12, -35))
+                .build();
+
+
+       /* TrajectorySequence coneLineUp = drive.trajectorySequenceBuilder(startPose)
                 .turn(Math.toRadians(90))
                 .lineTo(new Vector2d(-35, -63))
                 .waitSeconds(0.2)
@@ -211,8 +252,16 @@ public class LeftAutoTestOpMode extends LinearOpMode {
 
         intakeControlServo.setPosition(SERVO_DOWN);
 
-        drive.followTrajectorySequence(junctionBackUp);
+        drive.followTrajectorySequence(junctionBackUp);*/
 
 
+
+        targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
+        elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+        elevatorHeightControlMotor.setPower(1.0);
+        targetElevatorPosition = max(0.0, targetElevatorPosition);
+        targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
+
+        drive.followTrajectorySequence(bigTest);
     }
 }
