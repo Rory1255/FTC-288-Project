@@ -50,7 +50,7 @@ public class MeepMeepTesting {
                                 .lineTo(new Vector2d(-30, -17))
                                 .waitSeconds(0.3)
                                 .lineTo(new Vector2d(-35, -11.5))
-                                .turn(Math.toRadians(135))
+                                .turn(Math.toRadians(-225))
                                 .lineTo(new Vector2d(-35, -35))
                                 .lineTo(new Vector2d(-12, -35))
                                 .build()
