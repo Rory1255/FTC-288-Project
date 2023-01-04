@@ -160,7 +160,7 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
         TrajectorySequence stackForward = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .waitSeconds(0.3)
-                .lineTo(new Vector2d(-59, -11.5))
+                .lineTo(new Vector2d(-63, -11.1))
                 .build();
 
         TrajectorySequence leaveStackOrJunction = drive.trajectorySequenceBuilder(stackForward.end())
@@ -175,10 +175,10 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
 
 
-        TrajectorySequence realignWithStack = drive.trajectorySequenceBuilder(leaveStackOrJunction.end())
+      /*  TrajectorySequence realignWithStack = drive.trajectorySequenceBuilder(leaveStackOrJunction.end())
                 .waitSeconds(0.3)
                 .turn(Math.toRadians(-135))
-                .build();
+                .build();*/
 
         TrajectorySequence leaveAngleJunction = drive.trajectorySequenceBuilder(angleJunctionForward.end())
                 .waitSeconds(0.3)
@@ -193,12 +193,12 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
         TrajectorySequence colorAdjustLeft = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .strafeLeft(0.5)
-                .turn(Math.toRadians(3))
+                .turn(Math.toRadians(1.1))
                 .build();
 
         TrajectorySequence colorAdjustRight = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .strafeRight(0.5)
-                .turn(Math.toRadians(-3))
+                .turn(Math.toRadians(-1.1))
                 .build();
 
 
