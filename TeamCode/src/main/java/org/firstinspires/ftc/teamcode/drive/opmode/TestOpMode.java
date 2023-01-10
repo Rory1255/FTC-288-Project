@@ -64,7 +64,6 @@ public class TestOpMode extends LinearOpMode {
     private DcMotor rightOdometry = null;
     private DcMotor leftOdometry = null;
     private BNO055IMU imu;
-    private DigitalChannel magneticLimitSwitch = null;
     private RevBlinkinLedDriver revBlinkin = null;
     private ColorSensor leftLineFollower = null;
     private ColorSensor rightLineFollower = null;
@@ -86,7 +85,6 @@ public class TestOpMode extends LinearOpMode {
         leftOdometry = hardwareMap.get(DcMotor.class, "leftOdoEncoder");
         middleOdometry = hardwareMap.get(DcMotor.class, "middleOdoEncoder");
         rightOdometry = hardwareMap.get(DcMotor.class, "rightOdoEncoder");
-        magneticLimitSwitch = hardwareMap.get(DigitalChannel.class, "magneticLimitSwitch");
         revBlinkin = hardwareMap.get(RevBlinkinLedDriver.class, "revBlinkin");
         leftLineFollower = hardwareMap.get(ColorSensor.class, "leftLineFollower");
         rightLineFollower = hardwareMap.get(ColorSensor.class, "rightLineFollower");
@@ -228,9 +226,6 @@ public class TestOpMode extends LinearOpMode {
 
             targetElevatorPosition = max(0.0, targetElevatorPosition); // Cannot go below 0
             targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX); // Cannot go beyond max height
-            if (magneticLimitSwitch.getState() == false) {
-                targetElevatorPosition = max(0.0, targetElevatorPosition);
-            }
 
 
             // Servo intake and limit switch functionality
@@ -332,8 +327,6 @@ public class TestOpMode extends LinearOpMode {
             telemetry.addData("Right Odometry Value: ", rightOdometry.getCurrentPosition());
 
             telemetry.addData("Left Trigger Output: ", gamepad1.left_trigger);
-
-            telemetry.addData("Magnet Switch State: ", magneticLimitSwitch.getState());
 
             //telemetry.addData("Bumper Count: ", bumperCount);
 

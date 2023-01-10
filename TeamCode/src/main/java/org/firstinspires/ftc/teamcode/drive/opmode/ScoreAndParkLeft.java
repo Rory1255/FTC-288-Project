@@ -143,7 +143,7 @@ public class ScoreAndParkLeft extends LinearOpMode {
                 .build();
 
         TrajectorySequence leaveJunction = drive.trajectorySequenceBuilder(junctionForward.end())
-                .waitSeconds(0.5)
+                .waitSeconds(0.6)
                 .lineTo(new Vector2d(-22.5, -35))
                 .build();
 
@@ -152,15 +152,20 @@ public class ScoreAndParkLeft extends LinearOpMode {
                 .strafeTo(new Vector2d(-35, -35.1))
                 .build();
 
-        TrajectorySequence alignWithStack = drive.trajectorySequenceBuilder(connectingRegion.end())
-                .lineTo(new Vector2d(-35, -11.5))
+        TrajectorySequence pushSignal = drive. trajectorySequenceBuilder(connectingRegion.end())
+                .lineTo(new Vector2d(-35, -7))
+                .build();
+
+        TrajectorySequence alignWithStack = drive.trajectorySequenceBuilder(pushSignal.end())
+                .waitSeconds(0.1)
+                .lineTo(new Vector2d(-35, -10.5))
                 .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(-49, -11.5))
+                .lineTo(new Vector2d(-49, -10.6))
                 .build();
 
         TrajectorySequence stackForward = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .waitSeconds(0.3)
-                .lineTo(new Vector2d(-63, -11.1))
+                .lineTo(new Vector2d(-61.85, -10.6))
                 .build();
 
         TrajectorySequence leaveStackOrJunction = drive.trajectorySequenceBuilder(stackForward.end())
@@ -214,7 +219,7 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
         TrajectorySequence parkingZoneThree = drive.trajectorySequenceBuilder(parkingZoneTwo.end())
                 .waitSeconds(0.2)
-                .lineTo(new Vector2d(-12, -35))
+                .lineTo(new Vector2d(-11, -35))
                 .build();
 
 
@@ -263,7 +268,10 @@ public class ScoreAndParkLeft extends LinearOpMode {
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
         elevatorHeightControlMotor.setPower(1.0);
 
+
         drive.followTrajectorySequence(connectingRegion);
+
+        drive.followTrajectorySequence(pushSignal);
 
         drive.followTrajectorySequence(alignWithStack);
 
