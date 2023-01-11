@@ -139,7 +139,7 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
 
         TrajectorySequence junctionForward = drive.trajectorySequenceBuilder(lineUpWithJunction.end())
-                .lineTo(new Vector2d(-22.5, -31.5))
+                .lineTo(new Vector2d(-22.5, -30.5))
                 .build();
 
         TrajectorySequence leaveJunction = drive.trajectorySequenceBuilder(junctionForward.end())
@@ -271,21 +271,26 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
         drive.followTrajectorySequence(connectingRegion);
 
+
+
+
+
+        if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.ONE){
+            drive.followTrajectorySequence(parkingZoneOne);
+
+        }
+
+        if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.THREE){
+            drive.followTrajectorySequence(parkingZoneThree);
+
+        }
+
+
+        /*
         drive.followTrajectorySequence(pushSignal);
 
         drive.followTrajectorySequence(alignWithStack);
 
-       /* if (leftLineFollower.red() > leftLineFollower.blue() && leftLineFollower.red() > leftLineFollower.green() && rightLineFollower.red() > rightLineFollower.blue() && rightLineFollower.red() > rightLineFollower.green()){
-            drive.followTrajectorySequence(stackForward);
-        }
-        if (leftLineFollower.red() > leftLineFollower.blue() && leftLineFollower.red() > leftLineFollower.green() && rightLineFollower.red() <= rightLineFollower.blue() && rightLineFollower.red() <= rightLineFollower.green()){
-            drive.followTrajectorySequence(colorAdjustLeft);
-            drive.followTrajectorySequence(stackForward);
-        }
-        if (leftLineFollower.red() <= leftLineFollower.blue() && leftLineFollower.red() <= leftLineFollower.green() && rightLineFollower.red() > rightLineFollower.blue() && rightLineFollower.red() > rightLineFollower.green()){
-            drive.followTrajectorySequence(colorAdjustRight);
-            drive.followTrajectorySequence(stackForward);
-        }*/
 
         targetElevatorPosition = ELEVATOR_HEIGHT_LOW;
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
@@ -335,19 +340,6 @@ public class ScoreAndParkLeft extends LinearOpMode {
         elevatorHeightControlMotor.setPower(1.0);
 
         drive.followTrajectorySequence(endAngle);
-
-        drive.followTrajectorySequence(parkingZoneTwo);
-
-
-
-        if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.ONE){
-            drive.followTrajectorySequence(parkingZoneOne);
-
-        }
-
-        if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.THREE){
-            drive.followTrajectorySequence(parkingZoneThree);
-
-        }
+         */
     }
 }

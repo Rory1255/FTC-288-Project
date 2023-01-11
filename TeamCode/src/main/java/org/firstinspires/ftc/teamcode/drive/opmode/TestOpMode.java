@@ -310,35 +310,34 @@ public class TestOpMode extends LinearOpMode {
 
 
             //elevator values and switch state
-            telemetry.addData("Switch State: ", limitSwitch.getState());
-            telemetry.addData("Elevator Position", elevatorHeightControlMotor.getCurrentPosition());
-            telemetry.addData("Elevator Target", targetElevatorPosition);
-            telemetry.addData("Elevator Delta", elevatorDelta);
+            //telemetry.addData("Switch State: ", limitSwitch.getState());
+            //telemetry.addData("Elevator Position", elevatorHeightControlMotor.getCurrentPosition());
+            //telemetry.addData("Elevator Target", targetElevatorPosition);
+            //telemetry.addData("Elevator Delta", elevatorDelta);
             elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
             elevatorHeightControlMotor.setPower(1.0);
             //motor power outputs
-            telemetry.addData("Front Left Power: ", leftFrontDriveMotor.getPower());
-            telemetry.addData("Front Right Power: ", rightFrontDriveMotor.getPower());
-            telemetry.addData("Back Left Power: ", leftBackDriveMotor.getPower());
-            telemetry.addData("Back Right Power: ", rightBackDriveMotor.getPower());
+            //telemetry.addData("Front Left Power: ", leftFrontDriveMotor.getPower());
+            //telemetry.addData("Front Right Power: ", rightFrontDriveMotor.getPower());
+            //telemetry.addData("Back Left Power: ", leftBackDriveMotor.getPower());
+           // telemetry.addData("Back Right Power: ", rightBackDriveMotor.getPower());
             //odometry outputs
             telemetry.addData("Left Odometry Value: ", leftOdometry.getCurrentPosition());
             telemetry.addData("Middle Odometry Value: ", middleOdometry.getCurrentPosition());
             telemetry.addData("Right Odometry Value: ", rightOdometry.getCurrentPosition());
-
-            telemetry.addData("Left Trigger Output: ", gamepad1.left_trigger);
+            //telemetry.addData("Left Trigger Output: ", gamepad1.left_trigger);
 
             //telemetry.addData("Bumper Count: ", bumperCount);
 
-            telemetry.addData("Status", "Run Time: " + runtime);
+            //telemetry.addData("Status", "Run Time: " + runtime);
 
 
-            telemetry.addData("Left Line Follower: ", leftLineFollower.red());
+            //telemetry.addData("Left Line Follower: ", leftLineFollower.red());
 
-            telemetry.addData("Right Line Follower: ", rightLineFollower.red());
+            //telemetry.addData("Right Line Follower: ", rightLineFollower.red());
 
 
-            telemetry.addData("Line Break Sensor: ", lineBreakSensor.getDistance(DistanceUnit.CM));
+            //telemetry.addData("Line Break Sensor: ", lineBreakSensor.getDistance(DistanceUnit.CM));
 
 
 
