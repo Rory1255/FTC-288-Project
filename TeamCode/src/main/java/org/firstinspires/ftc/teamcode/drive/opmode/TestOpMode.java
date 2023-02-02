@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -37,7 +38,7 @@ public class TestOpMode extends LinearOpMode {
     final double JOYSTICK_DEAD_ZONE = 0.20;
     final double JOYSTICK_MOVEMENT_SENSITIVITY = 0.75;
     final double JOYSTICK_ROTATION_SENSITIVITY = 1.00;
-
+    //TODO: increase elevator height values for new pulley system
     final double ELEVATOR_HEIGHT_MAX = 4157;
     final double ELEVATOR_HEIGHT_LOW = 1760;
     final double ELEVATOR_HEIGHT_MIDDLE = 2860;
@@ -88,7 +89,7 @@ public class TestOpMode extends LinearOpMode {
         revBlinkin = hardwareMap.get(RevBlinkinLedDriver.class, "revBlinkin");
         leftLineFollower = hardwareMap.get(ColorSensor.class, "leftLineFollower");
         rightLineFollower = hardwareMap.get(ColorSensor.class, "rightLineFollower");
-        lineBreakSensor = hardwareMap.get(DistanceSensor.class, "lineBreakSensor");
+
 
 
 
@@ -132,7 +133,7 @@ public class TestOpMode extends LinearOpMode {
         rightBackDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        elevatorHeightControlMotor.setDirection(DcMotor.Direction.FORWARD);
+        elevatorHeightControlMotor.setDirection(DcMotor.Direction.REVERSE);
         elevatorHeightControlMotor.setTargetPosition(0);
         elevatorHeightControlMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeControlServo.setPosition(0.5); //stopped position of intake servo
@@ -150,7 +151,7 @@ public class TestOpMode extends LinearOpMode {
 
         //runtime until driver hits stop
         while (opModeIsActive()) {
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            // Field Centric Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double joystickMovementY = inputScaling(-gamepad1.left_stick_y) * JOYSTICK_MOVEMENT_SENSITIVITY;  // Note: pushing stick forward gives negative value
             double joystickMovementX = inputScaling(gamepad1.left_stick_x) * JOYSTICK_MOVEMENT_SENSITIVITY;
             double yaw = (inputScaling(gamepad1.right_stick_x) * JOYSTICK_ROTATION_SENSITIVITY) * 0.75;

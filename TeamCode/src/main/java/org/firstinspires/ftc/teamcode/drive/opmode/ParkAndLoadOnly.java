@@ -15,6 +15,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -34,7 +35,7 @@ public class ParkAndLoadOnly extends LinearOpMode {
     private DigitalChannel limitSwitch = null;
 
     private double targetElevatorPosition = 0;
-
+    //TODO: increase elevator height values for new pulley system
     final double ELEVATOR_HEIGHT_MAX = 4157;
     final double ELEVATOR_HEIGHT_LOW = 1773;
     final double ELEVATOR_HEIGHT_MIDDLE = 2905;
@@ -76,7 +77,7 @@ public class ParkAndLoadOnly extends LinearOpMode {
         }
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         elevatorHeightControlMotor = hardwareMap.get(DcMotor.class, "elevatorMotor");
-        elevatorHeightControlMotor.setDirection(DcMotor.Direction.FORWARD);
+        elevatorHeightControlMotor.setDirection(DcMotor.Direction.REVERSE);
         elevatorHeightControlMotor.setTargetPosition(0);
         elevatorHeightControlMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 

@@ -18,6 +18,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -39,7 +40,7 @@ public class ScoreAndParkLeft extends LinearOpMode {
     private DigitalChannel limitSwitch = null;
 
     private double targetElevatorPosition = 0;
-
+    //TODO: increase elevator height values for new pulley system
     final double ELEVATOR_HEIGHT_MAX = 4157;
     final double ELEVATOR_HEIGHT_LOW = 1673;
     final double ELEVATOR_HEIGHT_MIDDLE = 2784;
@@ -82,7 +83,7 @@ public class ScoreAndParkLeft extends LinearOpMode {
         }
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         elevatorHeightControlMotor = hardwareMap.get(DcMotor.class, "elevatorMotor");
-        elevatorHeightControlMotor.setDirection(DcMotor.Direction.FORWARD);
+        elevatorHeightControlMotor.setDirection(DcMotor.Direction.REVERSE);
         elevatorHeightControlMotor.setTargetPosition(0);
         elevatorHeightControlMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -118,37 +119,37 @@ public class ScoreAndParkLeft extends LinearOpMode {
 
         Color.RGBToHSV(rightLineFollower.red() * 8, rightLineFollower.green() * 8, rightLineFollower.blue() * 8, hsvValues);*/
 
-        TrajectorySequence loadForward = drive.trajectorySequenceBuilder(startPose)
+        /*TrajectorySequence loadForward = drive.trajectorySequenceBuilder(startPose)
                 .waitSeconds(0.5)
                 .lineTo(new Vector2d(-35, -54),
                 SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
+                .build();*/
 
 
 
-        TrajectorySequence secondaryForward = drive.trajectorySequenceBuilder(loadForward.end())
+        TrajectorySequence initialForward = drive.trajectorySequenceBuilder(startPose)
                 .waitSeconds(0.5)
                 .lineTo(new Vector2d(-35, -35))
                 .build();
 
-        TrajectorySequence lineUpWithJunction = drive.trajectorySequenceBuilder(secondaryForward.end())
+        TrajectorySequence lineUpWithJunction = drive.trajectorySequenceBuilder(initialForward.end())
                 .waitSeconds(0.3)
-                .strafeTo(new Vector2d(-22.5, -35))
+                .strafeTo(new Vector2d(-22.6, -35))
                 .build();
 
 
         TrajectorySequence junctionForward = drive.trajectorySequenceBuilder(lineUpWithJunction.end())
-                .lineTo(new Vector2d(-22.5, -30.5))
+                .lineTo(new Vector2d(-22.6, -30.5))
                 .build();
 
         TrajectorySequence leaveJunction = drive.trajectorySequenceBuilder(junctionForward.end())
-                .waitSeconds(0.6)
+                .waitSeconds(0.5)
                 .lineTo(new Vector2d(-22.5, -35))
                 .build();
 
         TrajectorySequence connectingRegion = drive.trajectorySequenceBuilder(leaveJunction.end())
-                .waitSeconds(0.2)
+                .waitSeconds(0.4)
                 .strafeTo(new Vector2d(-35, -35.1))
                 .build();
 
@@ -223,39 +224,16 @@ public class ScoreAndParkLeft extends LinearOpMode {
                 .build();
 
 
-        targetElevatorPosition = ELEVATOR_HEIGHT_SHORT;
+        targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
         elevatorHeightControlMotor.setPower(1.0);
         targetElevatorPosition = max(0.0, targetElevatorPosition);
         targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
         intakeControlServo.setPosition(SERVO_UP);
 
-        drive.followTrajectorySequence(loadForward);
+        drive.followTrajectorySequence(initialForward);
 
-        double intake = 0;
-        while (intake < 1){
-            if (limitSwitch.getState() == true){
-                while (limitSwitch.getState() == true){
-                    targetElevatorPosition = targetElevatorPosition - 15;
-                    elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
-                    elevatorHeightControlMotor.setPower(0.8);
-                    targetElevatorPosition = max(0.0, targetElevatorPosition);
-                    targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
-                }
-            }
-            if (limitSwitch.getState() == false){
-                targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
-                elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
-                elevatorHeightControlMotor.setPower(0.8);
-                intakeControlServo.setPosition(SERVO_STOP);
-                if (targetElevatorPosition >= 2780 && targetElevatorPosition <= 2800){
-                    intake = intake + 1;
-                }
-            }
 
-        }
-
-        drive.followTrajectorySequence(secondaryForward);
         drive.followTrajectorySequence(lineUpWithJunction);
         drive.followTrajectorySequence(junctionForward);
 
@@ -264,15 +242,12 @@ public class ScoreAndParkLeft extends LinearOpMode {
         drive.followTrajectorySequence(leaveJunction);
 
         intakeControlServo.setPosition(SERVO_STOP);
-        targetElevatorPosition = ELEVATOR_HEIGHT_LOW;
+        targetElevatorPosition = ELEVATOR_HEIGHT_BOTTOM;
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
         elevatorHeightControlMotor.setPower(1.0);
 
 
         drive.followTrajectorySequence(connectingRegion);
-
-
-
 
 
         if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.ONE){
