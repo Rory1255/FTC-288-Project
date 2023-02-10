@@ -30,8 +30,8 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "Score And Park Right")
-public class ScoreAndParkRight extends LinearOpMode {
+@Autonomous(name = "Score From Stack Right")
+public class ScoreStackRight extends LinearOpMode {
 
     private SignalDetectTest sleeveDetection;
     private OpenCvCamera camera;
@@ -42,6 +42,9 @@ public class ScoreAndParkRight extends LinearOpMode {
 
     private RevBlinkinLedDriver revBlinkin = null;
 
+    private ColorSensor leftLineFollower = null;
+    private ColorSensor rightLineFollower = null;
+
     private double targetElevatorPosition = 0;
     //TODO: increase elevator height values for new pulley system
     final double ELEVATOR_HEIGHT_MAX = 4157;
@@ -50,7 +53,7 @@ public class ScoreAndParkRight extends LinearOpMode {
     final double ELEVATOR_HEIGHT_HIGH = 3920;
     final double ELEVATOR_HEIGHT_SHORT = 986;
     final double ELEVATOR_HEIGHT_BOTTOM = 301;
-    final double FIVE_STACK_HEIGHT = 664;
+    final double FIVE_STACK_HEIGHT = 764;
     final double FOUR_STACK_HEIGHT = 494;
     final double THREE_STACK_HEIGHT = 327;
     final double TWO_STACK_HEIGHT = 161;
@@ -95,9 +98,9 @@ public class ScoreAndParkRight extends LinearOpMode {
 
         revBlinkin = hardwareMap.get(RevBlinkinLedDriver.class, "revBlinkin");
 
-        /*leftLineFollower = hardwareMap.get(ColorSensor.class, "leftLineFollower");
+        leftLineFollower = hardwareMap.get(ColorSensor.class, "leftLineFollower");
         rightLineFollower = hardwareMap.get(ColorSensor.class, "rightLineFollower");
-        lineBreakSensor = hardwareMap.get(DistanceSensor.class, "lineBreakSensor");*/
+        //lineBreakSensor = hardwareMap.get(DistanceSensor.class, "lineBreakSensor");
 
         waitForStart();
         camera.closeCameraDevice();
@@ -108,6 +111,15 @@ public class ScoreAndParkRight extends LinearOpMode {
         double SERVO_DOWN = 0.0;
         double SERVO_STOP = 0.5;
 
+        double leftRedValue = leftLineFollower.red();
+        double rightRedValue = rightLineFollower.red();
+        double leftBlueValue = leftLineFollower.blue();
+        double rightBlueValue = rightLineFollower.blue();
+
+        RevBlinkinLedDriver.BlinkinPattern blueDetect;
+        blueDetect = RevBlinkinLedDriver.BlinkinPattern.BLUE;
+        RevBlinkinLedDriver.BlinkinPattern redDetect;
+        redDetect = RevBlinkinLedDriver.BlinkinPattern.RED;
         RevBlinkinLedDriver.BlinkinPattern initialPattern;
         initialPattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
         revBlinkin.setPattern(initialPattern);
@@ -117,22 +129,6 @@ public class ScoreAndParkRight extends LinearOpMode {
         Pose2d startPose = new Pose2d(35, -62, Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
-
-        /*float hsvValues[] = {0F,0F,0F};
-
-        final float values[] = hsvValues;
-
-        Color.RGBToHSV(leftLineFollower.red() * 8, leftLineFollower.green() * 8, leftLineFollower.blue() * 8, hsvValues);
-
-        Color.RGBToHSV(rightLineFollower.red() * 8, rightLineFollower.green() * 8, rightLineFollower.blue() * 8, hsvValues);*/
-
-        /*TrajectorySequence loadForward = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(0.5)
-                .lineTo(new Vector2d(35, -54),
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();*/
-
 
 
         TrajectorySequence initialForward = drive.trajectorySequenceBuilder(startPose)
@@ -173,7 +169,7 @@ public class ScoreAndParkRight extends LinearOpMode {
 
         TrajectorySequence stackForward = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .waitSeconds(0.3)
-                .lineTo(new Vector2d(61.85, -10.6))
+                .lineTo(new Vector2d(60.2, -10.6))
                 .build();
 
         TrajectorySequence leaveStackOrJunction = drive.trajectorySequenceBuilder(stackForward.end())
@@ -206,12 +202,12 @@ public class ScoreAndParkRight extends LinearOpMode {
 
         TrajectorySequence colorAdjustLeft = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .strafeLeft(0.5)
-                .turn(Math.toRadians(1.1))
+                .turn(Math.toRadians(0.1))
                 .build();
 
         TrajectorySequence colorAdjustRight = drive.trajectorySequenceBuilder(alignWithStack.end())
                 .strafeRight(0.5)
-                .turn(Math.toRadians(-1.1))
+                .turn(Math.toRadians(-0.1))
                 .build();
 
 
@@ -231,15 +227,10 @@ public class ScoreAndParkRight extends LinearOpMode {
                 .lineTo(new Vector2d(11, -35))
                 .build();
 
-
-        //LED Control when switch is actuated
-        if (limitSwitch.getState() == false) {
-            RevBlinkinLedDriver.BlinkinPattern switchPattern;
-            switchPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
-            revBlinkin.setPattern(switchPattern);
-        } else {
-            revBlinkin.setPattern(initialPattern);
-        }
+        TrajectorySequence smallAdjustForward = drive.trajectorySequenceBuilder(alignWithStack.end())
+                .waitSeconds(0.1)
+                .forward(5)
+                .build();
 
         targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
@@ -263,15 +254,97 @@ public class ScoreAndParkRight extends LinearOpMode {
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
         elevatorHeightControlMotor.setPower(1.0);
 
+
         drive.followTrajectorySequence(connectingRegion);
 
+        drive.followTrajectorySequence(pushSignal);
+
+        drive.followTrajectorySequence(alignWithStack);
+
+
+        targetElevatorPosition = FIVE_STACK_HEIGHT;
+        elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+        elevatorHeightControlMotor.setPower(1.0);
+        targetElevatorPosition = max(0.0, targetElevatorPosition);
+        targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
+        intakeControlServo.setPosition(SERVO_UP);
+
+      /*  if (leftBlueValue < 400 && leftRedValue < 220 && rightBlueValue < 400 && rightRedValue < 220){
+            drive.followTrajectorySequence(smallAdjustForward);
+        }
+
+        if (leftRedValue > 220 && rightRedValue < 220){
+            drive.followTrajectorySequence(colorAdjustRight);
+        }
+        if (leftRedValue < 220 && rightRedValue > 220){
+            drive.followTrajectorySequence(colorAdjustLeft);
+        }
+        if (leftBlueValue > 450 && rightBlueValue < 450){
+            drive.followTrajectorySequence(colorAdjustRight);
+        }
+        if (leftBlueValue < 450 && rightBlueValue > 450){
+            drive.followTrajectorySequence(colorAdjustLeft);
+        }
+
+        if (leftBlueValue > 450 && rightBlueValue > 450){
+            revBlinkin.setPattern(blueDetect);
+        }
+        if (leftRedValue > 450 && rightRedValue > 450){
+            revBlinkin.setPattern(redDetect);
+        }*/
+
+
+        drive.followTrajectorySequence(stackForward);
+
+
+
+        double intake2 = 0;
+        while (intake2 < 1){
+            if (limitSwitch.getState() == true){
+                while (limitSwitch.getState() == true){
+                    targetElevatorPosition = targetElevatorPosition - 1;
+                    elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+                    elevatorHeightControlMotor.setPower(0.8);
+                    targetElevatorPosition = max(0.0, targetElevatorPosition);
+                    targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
+                }
+            }
+            if (limitSwitch.getState() == false){
+                targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
+                elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+                elevatorHeightControlMotor.setPower(0.8);
+                intakeControlServo.setPosition(SERVO_STOP);
+                if (targetElevatorPosition >= 2780 && targetElevatorPosition <= 2800){
+                    intake2 = intake2 + 1;
+                }
+            }
+
+        }
+
+        drive.followTrajectorySequence(leaveStackOrJunction);
+
+        drive.followTrajectorySequence(angleJunctionForward);
+
+        intakeControlServo.setPosition(SERVO_DOWN);
+
+        drive.followTrajectorySequence(leaveAngleJunction);
+
+        intakeControlServo.setPosition(SERVO_STOP);
+        targetElevatorPosition = ELEVATOR_HEIGHT_SHORT;
+        elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+        elevatorHeightControlMotor.setPower(1.0);
+
+
+        drive.followTrajectorySequence(endAngle);
+        drive.followTrajectorySequence(parkingZoneTwo);
+
         if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.ONE){
-            drive.followTrajectorySequence(parkingZoneThree);
+            drive.followTrajectorySequence(parkingZoneOne);
 
         }
 
         if (sleeveDetection.getPosition() == SignalDetectTest.ParkingPosition.THREE){
-            drive.followTrajectorySequence(parkingZoneOne);
+            drive.followTrajectorySequence(parkingZoneThree);
 
         }
 

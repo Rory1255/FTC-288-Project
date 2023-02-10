@@ -22,6 +22,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 
+
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -139,7 +140,7 @@ public class TestOpMode extends LinearOpMode {
         intakeControlServo.setPosition(0.5); //stopped position of intake servo
 
         RevBlinkinLedDriver.BlinkinPattern initialPattern;
-        initialPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_LIGHT_CHASE;
+        initialPattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
         revBlinkin.setPattern(initialPattern);
 
 
@@ -277,6 +278,23 @@ public class TestOpMode extends LinearOpMode {
                 }
             }
 
+            double leftLine = leftLineFollower.red();
+            double rightLine = rightLineFollower.red();
+            double leftLineBlue = leftLineFollower.blue();
+            double rightLineBlue = rightLineFollower.blue();
+
+            if (leftLine > 200 && rightLine > 200){
+                RevBlinkinLedDriver.BlinkinPattern redDetect;
+                redDetect = RevBlinkinLedDriver.BlinkinPattern.RED;
+                revBlinkin.setPattern(redDetect);
+            }
+            if (leftLineBlue > 450 && rightLineBlue > 450){
+                RevBlinkinLedDriver.BlinkinPattern blueDetect;
+                blueDetect = RevBlinkinLedDriver.BlinkinPattern.BLUE;
+                revBlinkin.setPattern(blueDetect);
+            }
+
+
             //LED Control when switch is actuated
             if (limitSwitch.getState() == false) {
                 RevBlinkinLedDriver.BlinkinPattern switchPattern;
@@ -310,6 +328,11 @@ public class TestOpMode extends LinearOpMode {
             }
 
 
+
+
+
+
+
             //elevator values and switch state
             //telemetry.addData("Switch State: ", limitSwitch.getState());
             //telemetry.addData("Elevator Position", elevatorHeightControlMotor.getCurrentPosition());
@@ -333,11 +356,13 @@ public class TestOpMode extends LinearOpMode {
             //telemetry.addData("Status", "Run Time: " + runtime);
 
 
-            //telemetry.addData("Left Line Follower: ", leftLineFollower.red());
+            telemetry.addData("Left Line Follower: ", leftLine);
 
-            //telemetry.addData("Right Line Follower: ", rightLineFollower.red());
+            telemetry.addData("Right Line Follower: ", rightLine);
 
+            telemetry.addData("Left Line Follower: ", leftLineBlue);
 
+            telemetry.addData("Right Line Follower: ", rightLineBlue);
             //telemetry.addData("Line Break Sensor: ", lineBreakSensor.getDistance(DistanceUnit.CM));
 
 

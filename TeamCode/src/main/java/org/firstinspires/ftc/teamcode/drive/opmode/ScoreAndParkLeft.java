@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
@@ -38,6 +39,8 @@ public class ScoreAndParkLeft extends LinearOpMode {
     private DcMotor elevatorHeightControlMotor = null;
     private Servo intakeControlServo = null;
     private DigitalChannel limitSwitch = null;
+
+    private RevBlinkinLedDriver revBlinkin = null;
 
     private double targetElevatorPosition = 0;
     //TODO: increase elevator height values for new pulley system
@@ -90,6 +93,8 @@ public class ScoreAndParkLeft extends LinearOpMode {
         intakeControlServo = hardwareMap.get(Servo.class, "intakeServo");
         limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
 
+        revBlinkin = hardwareMap.get(RevBlinkinLedDriver.class, "revBlinkin");
+
         /*leftLineFollower = hardwareMap.get(ColorSensor.class, "leftLineFollower");
         rightLineFollower = hardwareMap.get(ColorSensor.class, "rightLineFollower");
         lineBreakSensor = hardwareMap.get(DistanceSensor.class, "lineBreakSensor");*/
@@ -104,28 +109,16 @@ public class ScoreAndParkLeft extends LinearOpMode {
         double SERVO_STOP = 0.5;
 
 
+        RevBlinkinLedDriver.BlinkinPattern initialPattern;
+        initialPattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
+        revBlinkin.setPattern(initialPattern);
+
 
         sleep(1000);
 
         Pose2d startPose = new Pose2d(-35, -62, Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
-
-        /*float hsvValues[] = {0F,0F,0F};
-
-        final float values[] = hsvValues;
-
-        Color.RGBToHSV(leftLineFollower.red() * 8, leftLineFollower.green() * 8, leftLineFollower.blue() * 8, hsvValues);
-
-        Color.RGBToHSV(rightLineFollower.red() * 8, rightLineFollower.green() * 8, rightLineFollower.blue() * 8, hsvValues);*/
-
-        /*TrajectorySequence loadForward = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(0.5)
-                .lineTo(new Vector2d(-35, -54),
-                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();*/
-
 
 
         TrajectorySequence initialForward = drive.trajectorySequenceBuilder(startPose)
@@ -223,6 +216,15 @@ public class ScoreAndParkLeft extends LinearOpMode {
                 .lineTo(new Vector2d(-11, -35))
                 .build();
 
+
+        //LED Control when switch is actuated
+        if (limitSwitch.getState() == false) {
+            RevBlinkinLedDriver.BlinkinPattern switchPattern;
+            switchPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+            revBlinkin.setPattern(switchPattern);
+        } else {
+            revBlinkin.setPattern(initialPattern);
+        }
 
         targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
         elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
