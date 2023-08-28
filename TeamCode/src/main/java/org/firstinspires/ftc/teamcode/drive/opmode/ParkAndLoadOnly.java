@@ -1,30 +1,23 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
-@Autonomous(name = "Load And Park Only")
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+@Disabled
+@Autonomous(name = "Park Only")
 public class ParkAndLoadOnly extends LinearOpMode {
 
     private SignalDetectTest sleeveDetection;
@@ -103,16 +96,7 @@ public class ParkAndLoadOnly extends LinearOpMode {
 
 
 
-        TrajectorySequence loadForward = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(0.5)
-                .lineTo(new Vector2d(35, -54),
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-
-
-        TrajectorySequence initialForward = drive.trajectorySequenceBuilder(loadForward.end())
+        TrajectorySequence initialForward = drive.trajectorySequenceBuilder(startPose)
                 .waitSeconds(0.5)
                 .lineTo(new Vector2d(35, -35))
                 .build();
@@ -129,38 +113,6 @@ public class ParkAndLoadOnly extends LinearOpMode {
                 .lineTo(new Vector2d(12, -35))
                 .build();
 
-
-        targetElevatorPosition = ELEVATOR_HEIGHT_SHORT;
-        elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
-        elevatorHeightControlMotor.setPower(1.0);
-        targetElevatorPosition = max(0.0, targetElevatorPosition);
-        targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
-        intakeControlServo.setPosition(SERVO_UP);
-
-        drive.followTrajectorySequence(loadForward);
-
-        double intake = 0;
-        while (intake < 1){
-            if (limitSwitch.getState() == true){
-                while (limitSwitch.getState() == true){
-                    targetElevatorPosition = targetElevatorPosition - 15;
-                    elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
-                    elevatorHeightControlMotor.setPower(0.8);
-                    targetElevatorPosition = max(0.0, targetElevatorPosition);
-                    targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
-                }
-            }
-            if (limitSwitch.getState() == false){
-                targetElevatorPosition = ELEVATOR_HEIGHT_SHORT;
-                elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
-                elevatorHeightControlMotor.setPower(0.8);
-                intakeControlServo.setPosition(SERVO_STOP);
-                if (targetElevatorPosition >= 950 && targetElevatorPosition <= 999){
-                    intake = intake + 1;
-                }
-            }
-
-        }
 
         drive.followTrajectorySequence(initialForward);
 

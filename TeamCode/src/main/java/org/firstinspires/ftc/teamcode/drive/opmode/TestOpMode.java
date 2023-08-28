@@ -8,29 +8,27 @@ import static java.lang.Math.toRadians;
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp(name = "SimpleTestOpMode", group = "Linear Opmode")
 
@@ -143,6 +141,7 @@ public class TestOpMode extends LinearOpMode {
         initialPattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
         revBlinkin.setPattern(initialPattern);
 
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         //Wait for driver to press play
         telemetry.addData("Status", "Initialized");
@@ -206,6 +205,7 @@ public class TestOpMode extends LinearOpMode {
             rightBackDriveMotor.setPower(rightBackPower);
             leftFrontDriveMotor.setPower(leftFrontPower);
             leftBackDriveMotor.setPower(leftBackPower);
+
 
             // elevator manual control
             double elevatorDelta = (-gamepad2.right_stick_y * ELEVATOR_ADJUST_RATE) * 1.5;
@@ -283,16 +283,6 @@ public class TestOpMode extends LinearOpMode {
             double leftLineBlue = leftLineFollower.blue();
             double rightLineBlue = rightLineFollower.blue();
 
-            if (leftLine > 200 && rightLine > 200){
-                RevBlinkinLedDriver.BlinkinPattern redDetect;
-                redDetect = RevBlinkinLedDriver.BlinkinPattern.RED;
-                revBlinkin.setPattern(redDetect);
-            }
-            if (leftLineBlue > 450 && rightLineBlue > 450){
-                RevBlinkinLedDriver.BlinkinPattern blueDetect;
-                blueDetect = RevBlinkinLedDriver.BlinkinPattern.BLUE;
-                revBlinkin.setPattern(blueDetect);
-            }
 
 
             //LED Control when switch is actuated
@@ -300,12 +290,58 @@ public class TestOpMode extends LinearOpMode {
                 RevBlinkinLedDriver.BlinkinPattern switchPattern;
                 switchPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
                 revBlinkin.setPattern(switchPattern);
-            } else {
+            }
+            if (leftLine > 200 && rightLine > 200){
+                RevBlinkinLedDriver.BlinkinPattern redDetect;
+                redDetect = RevBlinkinLedDriver.BlinkinPattern.RED;
+                revBlinkin.setPattern(redDetect);
+            }
+            if (leftLineBlue > 451 && rightLineBlue > 450){
+                RevBlinkinLedDriver.BlinkinPattern blueDetect;
+                blueDetect = RevBlinkinLedDriver.BlinkinPattern.BLUE;
+                revBlinkin.setPattern(blueDetect);
+            }
+            if (limitSwitch.getState() == true && leftLine < 200 && rightLine < 200 && leftLineBlue < 450 && rightLineBlue < 450) {
                 revBlinkin.setPattern(initialPattern);
             }
 
-            //Quick adjust elevator using bumper
+            //Auto pickup off of Stack
+            /*if (gamepad1.left_bumper && gamepad1.right_bumper){
+                targetElevatorPosition = ELEVATOR_HEIGHT_LOW;
+                elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+                elevatorHeightControlMotor.setPower(0.8);
+                targetElevatorPosition = max(0.0, targetElevatorPosition);
+                targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
+                intakeControlServo.setPosition(SERVO_UP);
+                alignToMarker(drive, true, -90.0);
 
+                double intake2 = 0;
+                while (intake2 < 1){
+                    if (limitSwitch.getState() == true){
+                        while (limitSwitch.getState() == true){
+                            targetElevatorPosition = targetElevatorPosition - 2;
+                            elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+                            elevatorHeightControlMotor.setPower(0.8);
+                            targetElevatorPosition = max(0.0, targetElevatorPosition);
+                            targetElevatorPosition = min(targetElevatorPosition, ELEVATOR_HEIGHT_MAX);
+                        }
+                    }
+                    if (limitSwitch.getState() == false){
+                        targetElevatorPosition = ELEVATOR_HEIGHT_MIDDLE;
+                        elevatorHeightControlMotor.setTargetPosition((int) targetElevatorPosition);
+                        elevatorHeightControlMotor.setPower(0.8);
+                        intakeControlServo.setPosition(SERVO_STOP);
+                        if (targetElevatorPosition >= 2780 && targetElevatorPosition <= 2800){
+                            intake2 = intake2 + 1;
+                        }
+                    }
+
+                }
+
+
+            }*/
+
+            //Quick adjust elevator using bumper
 
             if (targetElevatorPosition == ELEVATOR_HEIGHT_HIGH){
                 if (gamepad2.left_bumper == true){
@@ -387,5 +423,58 @@ public class TestOpMode extends LinearOpMode {
         return sign * magnitude;
     }
 
+
+    void alignToMarker(MecanumDrive drive, boolean blueMode, double targetAngle) {
+        // We can take at most 1s to align the robot.
+        final double deadline = getRuntime() + 1.0;
+        while (!isStopRequested() && getRuntime() < deadline) {
+
+            if (leftLineFollower.red() > leftLineFollower.blue() || rightLineFollower.red() > rightLineFollower.blue()){
+                blueMode = false;
+            }
+            drive.updatePoseEstimate();
+            double strengthL = blueMode ? leftLineFollower.blue() : leftLineFollower.red();
+            double strengthR = blueMode ? rightLineFollower.blue() : leftLineFollower.red();
+            double xdelta = strengthR - strengthL;
+            double xpower = xdelta * 0.0002;
+            if (strengthL < 300 && strengthR < 300) {
+                xpower = 0; // If we're not on the line at all, don't try to align with it
+            }
+
+            double angle = imu.getAngularOrientation().firstAngle;
+            double angleDelta = angle - targetAngle;
+            double rpower = angleDelta * 0.02;
+            if (Math.abs(angleDelta) > 15.0) {
+                rpower = 0; // If we're way off, don't try to correct angle
+            }
+
+            telemetry.addData("Left Reading:", strengthL);
+            telemetry.addData("Right Reading:", strengthR);
+            telemetry.addData("IMU Angle:", angle);
+            telemetry.addData("X Power:", xpower);
+            telemetry.addData("R Power:", rpower);
+            telemetry.update();
+
+            // TODO: Add a check here such that if the xdelta and angleDelta values
+            // are within a reasonable range (say xdelta < 50 and angleDelta < 5 and
+            // also strengthL/R are > 300 to make sure we're on the line) for some
+            // length of time (this is an important qualifier to make sure we don't
+            // overshoot across the line and fail to correct afterwards) we can exit
+            // the alignment loop early.
+
+            // Optionally we might drive forward a little bit during this whole alignment process.
+            // This helps get us into position *marginally* faster, and also might help by adding
+            // some baseline motion so the X/R adjustments are a bit more accurate.
+            double ypower = 0.25;
+
+            // Compute motor drive strengths and apply.
+            double scale = Math.max(Math.abs(xpower) + Math.abs(ypower) + Math.abs(rpower), 1.0);
+            double powerFL = (ypower + xpower + rpower) / scale;
+            double powerBL = (ypower - xpower + rpower) / scale;
+            double powerFR = (ypower - xpower - rpower) / scale;
+            double powerBR = (ypower + xpower - rpower) / scale;
+            drive.setMotorPowers(powerFL, powerBL, powerBR, powerFR);
+        }
+    }
 
 }
